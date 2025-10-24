@@ -11,6 +11,9 @@ const markSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    file: {
+        type: String
+    },
     marks: {
         type: Number,
         required: true,
