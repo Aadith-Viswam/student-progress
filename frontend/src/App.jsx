@@ -6,6 +6,9 @@ import RootRedirect from "./components/RootRedirect";
 import "./App.css"
 import CreateClass from "./components/Class";
 import ClassDetail from "./components/ClassDetail";
+import StudentDetailPage from "./components/StudentDetails";
+import ClassAssignments from "./components/StudentAssignment";
+import AssignmentSubmissions from "./components/AssignmentTeacher";
 
 function App() {
   return (
@@ -19,6 +22,9 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/classes" element={<CreateClass />} />
         <Route path="/dashboard/classes/:id" element={<ClassDetail />} />
+        <Route path="/dashboard/students/:id" element={<StudentDetailPage />} />
+        <Route path="/dashboard/assignment/:id" element={<ClassAssignments />} />
+        <Route path="/dashboard/assignments/:assignmentId/submissions" element={<AssignmentSubmissions />} />
       </Routes>
 
     </Router>

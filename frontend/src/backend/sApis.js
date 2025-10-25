@@ -23,3 +23,13 @@ export const submitAssignment = async (assignmentId, file) => {
         throw error.response?.data || { message: "Submission failed" };
     }
 };
+
+export const getStudentDetails = async (userId) => {
+  try {
+    const response = await api.get(`/student/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching student details:", error.response?.data || error.message);
+    throw error;
+  }
+};

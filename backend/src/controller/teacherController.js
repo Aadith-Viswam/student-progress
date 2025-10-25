@@ -6,130 +6,130 @@ import Student from "../models/studentModel.js";
 
 // Controller to create a class
 export const createClass = async (req, res) => {
-    try {
-        const { classname } = req.body;
-        console.log("classanme",classname)
+  try {
+    const { classname } = req.body;
+    console.log("classanme", classname)
 
-        // 2️⃣ Allow only teachers
-        if (req.user.role !== "teacher") {
-            return res.status(403).json({ message: "Access denied. Only teachers can create classes." });
-        }
-
-        // 4️⃣ Create class
-        const newClass = new ClassModel({
-            classname,
-            userId: req.user._id
-        });
-
-        await newClass.save();
-
-        res.status(201).json({ message: "Class created successfully", class: newClass });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error while creating class" });
+    // 2️⃣ Allow only teachers
+    if (req.user.role !== "teacher") {
+      return res.status(403).json({ message: "Access denied. Only teachers can create classes." });
     }
+
+    // 4️⃣ Create class
+    const newClass = new ClassModel({
+      classname,
+      userId: req.user._id
+    });
+
+    await newClass.save();
+
+    res.status(201).json({ message: "Class created successfully", class: newClass });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while creating class" });
+  }
 };
 
 // Controller to submit marks
 export const submitMarks = async (req, res) => {
-    try {
-        const { studentId, marks, feedback } = req.body;
-        const { assignmentId } = req.params;
+  try {
+    const { studentId, marks, feedback } = req.body;
+    const { assignmentId } = req.params;
 
-        // 1️⃣ Check if user is authenticated
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized. Please login." });
-        }
-
-        // 2️⃣ Only teachers can submit marks
-        if (req.user.role !== "teacher") {
-            return res.status(403).json({ message: "Access denied. Only teachers can submit marks." });
-        }
-
-        // 3️⃣ Check if assignment exists and belongs to teacher
-        const assignment = await Assignment.findById(assignmentId);
-        if (!assignment) {
-            return res.status(404).json({ message: "Assignment not found." });
-        }
-
-        if (assignment.teacherId.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "You are not allowed to submit marks for this assignment." });
-        }
-
-        // 4️⃣ Check if student exists
-        const student = await User.findById(studentId);
-        if (!student || student.role !== "student") {
-            return res.status(404).json({ message: "Student not found." });
-        }
-
-        // 5️⃣ Create or update marks
-        let markEntry = await Mark.findOne({ assignmentId, studentId });
-
-        if (markEntry) {
-            // Update existing marks
-            markEntry.marks = marks;
-            markEntry.feedback = feedback;
-            await markEntry.save();
-        } else {
-            // Create new marks
-            markEntry = new Mark({
-                assignmentId,
-                studentId,
-                marks,
-                feedback
-            });
-            await markEntry.save();
-        }
-
-        res.status(200).json({ message: "Marks submitted successfully", mark: markEntry });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error while submitting marks" });
+    // 1️⃣ Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized. Please login." });
     }
+
+    // 2️⃣ Only teachers can submit marks
+    if (req.user.role !== "teacher") {
+      return res.status(403).json({ message: "Access denied. Only teachers can submit marks." });
+    }
+
+    // 3️⃣ Check if assignment exists and belongs to teacher
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found." });
+    }
+
+    if (assignment.teacherId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not allowed to submit marks for this assignment." });
+    }
+
+    // 4️⃣ Check if student exists
+    const student = await User.findById(studentId);
+    if (!student || student.role !== "student") {
+      return res.status(404).json({ message: "Student not found." });
+    }
+
+    // 5️⃣ Create or update marks
+    let markEntry = await Mark.findOne({ assignmentId, studentId });
+
+    if (markEntry) {
+      // Update existing marks
+      markEntry.marks = marks;
+      markEntry.feedback = feedback;
+      await markEntry.save();
+    } else {
+      // Create new marks
+      markEntry = new Mark({
+        assignmentId,
+        studentId,
+        marks,
+        feedback
+      });
+      await markEntry.save();
+    }
+
+    res.status(200).json({ message: "Marks submitted successfully", mark: markEntry });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while submitting marks" });
+  }
 };
 
 
 // Controller to create assignment
 export const createAssignment = async (req, res) => {
-    try {
-        const { title, subject, description } = req.body;
-        const { classId } = req.params;
+  try {
+    const { title, subject, description } = req.body;
+    const { classId } = req.params;
 
-        // 1️⃣ Check if user is authenticated
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized. Please login." });
-        }
-
-        // 2️⃣ Only teachers can create assignments
-        if (req.user.role !== "teacher") {
-            return res.status(403).json({ message: "Access denied. Only teachers can create assignments." });
-        }
-
-        // 3️⃣ Check if class exists
-        const classExists = await ClassModel.findById(classId);
-        if (!classExists) {
-            return res.status(404).json({ message: "Class not found." });
-        }
-
-        // 4️⃣ Create assignment
-        const newAssignment = new Assignment({
-            title,
-            subject,
-            teacherId: req.user._id, // automatically from logged-in teacher
-            classId,
-            description
-        });
-
-        await newAssignment.save();
-
-        res.status(201).json({ message: "Assignment created successfully", assignment: newAssignment });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error while creating assignment" });
+    // 1️⃣ Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized. Please login." });
     }
+
+    // 2️⃣ Only teachers can create assignments
+    if (req.user.role !== "teacher") {
+      return res.status(403).json({ message: "Access denied. Only teachers can create assignments." });
+    }
+
+    // 3️⃣ Check if class exists
+    const classExists = await ClassModel.findById(classId);
+    if (!classExists) {
+      return res.status(404).json({ message: "Class not found." });
+    }
+
+    // 4️⃣ Create assignment
+    const newAssignment = new Assignment({
+      title,
+      subject,
+      teacherId: req.user._id, // automatically from logged-in teacher
+      classId,
+      description
+    });
+
+    await newAssignment.save();
+
+    res.status(201).json({ message: "Assignment created successfully", assignment: newAssignment });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while creating assignment" });
+  }
 };
 
 
@@ -228,5 +228,73 @@ export const getClassById = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error fetching class" });
+  }
+};
+
+export const getAssignmentsByClass = async (req, res) => {
+  const { classId } = req.params;
+
+  try {
+    // Get all assignments for this class
+    const assignments = await Assignment.find({ classId })
+      .populate("teacherId", "name email")
+      .sort({ createdAt: -1 });
+
+    // If student, check submissions
+    console.log("req.user", req.user)
+    if (req.user && req.user.role === "student") {
+      const studentId = req.user._id;
+
+      // Fetch all submissions by this student for this class
+      const submittedMarks = await Mark.find({
+        studentId,
+        assignmentId: { $in: assignments.map((a) => a._id) },
+      }).select("assignmentId");
+
+      const submittedSet = new Set(submittedMarks.map((m) => m.assignmentId.toString()));
+
+      // Add `submitted` flag
+      const updatedAssignments = assignments.map((assignment) => ({
+        ...assignment.toObject(),
+        submitted: submittedSet.has(assignment._id.toString()),
+      }));
+      console.log("updatedAssignments", updatedAssignments)
+      return res.status(200).json(updatedAssignments);
+    }
+
+  console.log("teacher it is")
+    // For teacher or admin, just return assignments
+    res.status(200).json(assignments);
+  } catch (err) {
+    console.error("Error fetching assignments:", err);
+    res.status(500).json({ message: "Error fetching assignments" });
+  }
+};
+
+
+export const getSubmissionsByAssignment = async (req, res) => {
+  const { assignmentId } = req.params;
+
+  try {
+    // Check if the assignment exists
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    // Fetch all submissions for this assignment
+    const submissions = await Mark.find({ assignmentId })
+      .populate("studentId", "name email") // include student info
+      .sort({ createdAt: -1 }); // latest submission first
+
+    // If no submissions
+    if (submissions.length === 0) {
+      return res.status(200).json({ message: "No submissions yet", submissions: [] });
+    }
+
+    res.status(200).json(submissions);
+  } catch (err) {
+    console.error("Error fetching submissions:", err);
+    res.status(500).json({ message: "Error fetching submissions" });
   }
 };

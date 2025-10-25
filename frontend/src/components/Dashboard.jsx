@@ -193,20 +193,6 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-lg shadow-indigo-100/50 p-6 border border-slate-200/60">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-semibold text-slate-600 mb-1">Profile Complete</p>
-                                <p className="text-2xl font-bold text-slate-900">100%</p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="bg-white rounded-2xl shadow-lg shadow-purple-100/50 p-6 border border-slate-200/60">
                         <div className="flex items-center justify-between">
                             <div>
@@ -220,28 +206,55 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
+
+                    {
+                        profile?.user.role === "teacher" && (
+                            <motion.div
+                                onClick={() => navigate("/dashboard/classes")}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="bg-white rounded-2xl shadow-lg shadow-blue-100/50 p-6 border border-slate-200/60 cursor-pointer"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-600 mb-1">Manage Classes</p>
+                                        <p className="text-2xl font-bold text-slate-900">Go to Classes</p>
+                                    </div>
+                                    <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )
+                    }
+                       {
+                        profile?.user.role === "student" && (
+                            <motion.div
+                                onClick={() => navigate(`/dashboard/assignment/${profile.roleData.classId._id}`)}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="bg-white rounded-2xl shadow-lg shadow-blue-100/50 p-6 border border-slate-200/60 cursor-pointer"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-600 mb-1">Works</p>
+                                        <p className="text-2xl font-bold text-slate-900">Assignment</p>
+                                    </div>
+                                    <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )
+                    }
+
                 </motion.div>
 
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <motion.div
-                        onClick={() => navigate("/dashboard/classes")}
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="bg-white rounded-2xl shadow-lg shadow-blue-100/50 p-6 border border-slate-200/60 cursor-pointer"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-semibold text-slate-600 mb-1">Manage Classes</p>
-                                <p className="text-2xl font-bold text-slate-900">Go to Classes</p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
+
 
             </main>
         </div>

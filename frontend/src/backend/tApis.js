@@ -84,3 +84,22 @@ export const getClassById = async (id) => {
     throw error.response?.data || { message: "Error fetching class" };
   }
 };
+
+export const viewAssignmentsByClass = async (id) => {
+  try {
+    const res = await api.get(`/teacher/assignment/${id}`);
+    return res.data; // returns { _id, classname, createdAt, ... }
+  } catch (error) {
+    throw error.response?.data || { message: "Error fetching assignemt" };
+  }
+};
+
+export const getSubmissionsByAssignment = async (assignmentId) => {
+  try {
+    const res = await api.get(`/teacher/assignments/${assignmentId}/submissions`);
+    return res.data; // returns array of submissions
+  } catch (error) {
+    console.error("Error fetching submissions:", error);
+    throw error.response?.data || { message: "Error fetching submissions" };
+  }
+};
