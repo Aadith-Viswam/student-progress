@@ -8,6 +8,7 @@ import Student from "../models/studentModel.js";
 export const createClass = async (req, res) => {
     try {
         const { classname } = req.body;
+        console.log("classanme",classname)
 
         // 2️⃣ Allow only teachers
         if (req.user.role !== "teacher") {
@@ -204,5 +205,16 @@ export const viewSubmissionsByAssignment = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error while fetching submissions" });
+  }
+};
+
+export const getClasses = async (req, res) => {
+  try {
+    const userId = req.user.id; // comes from authenticated token middleware
+    const classes = await ClassModel.find({ userId }).sort({ createdAt: -1 });
+    res.status(200).json(classes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching classes" });
   }
 };

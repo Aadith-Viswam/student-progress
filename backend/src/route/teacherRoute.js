@@ -5,7 +5,8 @@ import {
   createAssignment, 
   submitMarks, 
   viewStudentsByClass, 
-  viewSubmissionsByAssignment
+  viewSubmissionsByAssignment,
+  getClasses
 } from "../controller/teacherController.js"; // adjust path if different
 
 const router = express.Router();
@@ -18,6 +19,7 @@ const router = express.Router();
 
 // Create a new class (teacher only)
 router.post("/classes", authMiddleware, createClass);
+router.get("/classes", authMiddleware, getClasses);
 
 /**
  * =========================

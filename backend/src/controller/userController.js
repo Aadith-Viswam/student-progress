@@ -29,8 +29,6 @@ export const signup = async (req, res) => {
 
         await newUser.save();
 
-        // 4️⃣ Create role-specific details
-        console.log(role, department)
         if (role === "student") {
             if (!regno || !classId) {
                 return res.status(400).json({ message: "Student must have regno and classId" });
@@ -73,7 +71,7 @@ export const signup = async (req, res) => {
         // 6️⃣ Set JWT in cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            path: "/",
             sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
@@ -124,8 +122,8 @@ export const login = async (req, res) => {
         // 4️⃣ Set JWT in HTTP-only cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
+            path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
@@ -147,4 +145,38 @@ export const login = async (req, res) => {
     }
 };
 
+export const getUserProfile = async (req, res) => {
+  try {
+    // 1️⃣ Make sure user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized. Please login." });
+    }
 
+    // 2️⃣ Fetch basic user info
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // 3️⃣ Fetch role-specific data
+    let roleData = null;
+    if (user.role === "student") {
+      roleData = await Student.findOne({ userId: user._id })
+        .populate("classId", "classname") // include class name if needed
+        .select("-__v -createdAt -updatedAt");
+    } else if (user.role === "teacher") {
+      roleData = await Teacher.findOne({ userId: user._id })
+        .select("-__v -createdAt -updatedAt");
+    }
+
+    // 4️⃣ Respond with combined data
+    res.status(200).json({
+      user,
+      roleData,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while fetching user profile." });
+  }
+};
