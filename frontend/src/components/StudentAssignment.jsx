@@ -261,6 +261,89 @@ export default function ClassAssignments() {
                   })}</span>
                 </div>
 
+                {/* Marks and Feedback Section (Only for Submitted) */}
+                {assignment.submitted && (assignment.marks || assignment.feedback) && (
+                  <div className="bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-5 mb-4 border-2 border-indigo-100">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900">Evaluation</h3>
+                    </div>
+                    
+                    {/* Marks */}
+                    {assignment.marks !== undefined && assignment.marks !== null && (
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-semibold text-slate-700">Your Score</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-purple-600">
+                              {assignment.marks}
+                            </span>
+                            <span className="text-lg font-semibold text-slate-500">/100</span>
+                          </div>
+                        </div>
+                        {/* Progress Bar */}
+                        <div className="w-full bg-white/80 rounded-full h-3 overflow-hidden shadow-inner">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${assignment.marks}%` }}
+                            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                            className={`h-full rounded-full ${
+                              assignment.marks >= 90
+                                ? 'bg-linear-to-r from-green-500 to-emerald-500'
+                                : assignment.marks >= 75
+                                ? 'bg-linear-to-r from-blue-500 to-cyan-500'
+                                : assignment.marks >= 60
+                                ? 'bg-linear-to-r from-yellow-500 to-orange-500'
+                                : 'bg-linear-to-r from-red-500 to-pink-500'
+                            }`}
+                          />
+                        </div>
+                        {/* Grade Badge */}
+                        <div className="mt-2 flex justify-end">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                            assignment.marks >= 90
+                              ? 'bg-green-100 text-green-700 border border-green-200'
+                              : assignment.marks >= 75
+                              ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                              : assignment.marks >= 60
+                              ? 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                              : 'bg-red-100 text-red-700 border border-red-200'
+                          }`}>
+                            {assignment.marks >= 90
+                              ? '🌟 Excellent'
+                              : assignment.marks >= 75
+                              ? '✨ Good'
+                              : assignment.marks >= 60
+                              ? '👍 Satisfactory'
+                              : '📚 Needs Improvement'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Feedback */}
+                    {assignment.feedback && (
+                      <div className="bg-white/80 rounded-xl p-4 border border-indigo-100">
+                        <div className="flex items-start gap-2 mb-2">
+                          <div className="w-6 h-6 bg-linear-to-br from-purple-500 to-pink-500 rounded-md flex items-center justify-center shrink-0 mt-0.5">
+                            <User className="w-3.5 h-3.5 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-1">
+                              Teacher's Feedback
+                            </p>
+                            <p className="text-sm text-slate-700 leading-relaxed">
+                              {assignment.feedback}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Upload Button */}
                 <motion.button
                   onClick={() => {

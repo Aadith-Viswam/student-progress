@@ -87,7 +87,7 @@ export const getStudentDetailsByUser = async (req, res) => {
       {
         $lookup: {
           from: "marks",
-          localField: "studentInfo._id",
+          localField: "_id",
           foreignField: "studentId",
           as: "marksInfo"
         }

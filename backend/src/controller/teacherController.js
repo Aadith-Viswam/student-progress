@@ -196,9 +196,6 @@ export const viewSubmissionsByAssignment = async (req, res) => {
         select: "name email"
       });
 
-    if (submissions.length === 0) {
-      return res.status(404).json({ message: "No submissions found for this assignment" });
-    }
 
     res.status(200).json({ assignment: assignment.title, submissions });
 
@@ -241,7 +238,6 @@ export const getAssignmentsByClass = async (req, res) => {
       .sort({ createdAt: -1 });
 
     // If student, check submissions
-    console.log("req.user", req.user)
     if (req.user && req.user.role === "student") {
       const studentId = req.user._id;
 
@@ -249,20 +245,31 @@ export const getAssignmentsByClass = async (req, res) => {
       const submittedMarks = await Mark.find({
         studentId,
         assignmentId: { $in: assignments.map((a) => a._id) },
-      }).select("assignmentId");
+      }).select("assignmentId marks feedback");
 
-      const submittedSet = new Set(submittedMarks.map((m) => m.assignmentId.toString()));
+      // Map assignmentId to marks and feedback
+      const marksMap = {};
+      submittedMarks.forEach((m) => {
+        marksMap[m.assignmentId.toString()] = {
+          marks: m.marks,
+          feedback: m.feedback,
+        };
+      });
 
-      // Add `submitted` flag
-      const updatedAssignments = assignments.map((assignment) => ({
-        ...assignment.toObject(),
-        submitted: submittedSet.has(assignment._id.toString()),
-      }));
-      console.log("updatedAssignments", updatedAssignments)
+      // Add `submitted`, `marks`, and `feedback` flags
+      const updatedAssignments = assignments.map((assignment) => {
+        const assignmentIdStr = assignment._id.toString();
+        return {
+          ...assignment.toObject(),
+          submitted: Boolean(marksMap[assignmentIdStr]),
+          marks: marksMap[assignmentIdStr]?.marks || null,
+          feedback: marksMap[assignmentIdStr]?.feedback || null,
+        };
+      });
+
       return res.status(200).json(updatedAssignments);
     }
 
-  console.log("teacher it is")
     // For teacher or admin, just return assignments
     res.status(200).json(assignments);
   } catch (err) {
