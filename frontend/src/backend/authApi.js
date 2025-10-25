@@ -9,6 +9,15 @@ export const signupUser = async (userData) => {
   }
 };
 
+export const logoutUser = async () => {
+  try {
+    await api.post("/logout"); // call your backend logout
+    // redirect to login
+    window.location.href = "/login";
+  } catch (error) {
+    console.error("Logout failed", error);
+  }
+};
 // ✅ Login function
 export const loginUser = async (userData) => {
   try {

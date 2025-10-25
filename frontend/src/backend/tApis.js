@@ -75,3 +75,12 @@ export const viewSubmissionsByAssignment = async (assignmentId) => {
         throw error.response?.data || { message: "Error fetching submissions" };
     }
 };
+
+export const getClassById = async (id) => {
+  try {
+    const res = await api.get(`/teacher/class/${id}`);
+    return res.data.class; // returns { _id, classname, createdAt, ... }
+  } catch (error) {
+    throw error.response?.data || { message: "Error fetching class" };
+  }
+};

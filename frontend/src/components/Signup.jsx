@@ -40,7 +40,6 @@ function TeacherSignup() {
       };
 
       const res = await signupUser(payload);
-      localStorage.setItem("token", res?.user?.token);
       setMessage("✅ " + res.message);
     } catch (err) {
       setMessage(err.message || "Signup failed");

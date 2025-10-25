@@ -6,7 +6,8 @@ import {
   submitMarks, 
   viewStudentsByClass, 
   viewSubmissionsByAssignment,
-  getClasses
+  getClasses,
+  getClassById
 } from "../controller/teacherController.js"; // adjust path if different
 
 const router = express.Router();
@@ -51,5 +52,6 @@ router.post("/marks/:assignmentId", authMiddleware, submitMarks);
 // classId passed as URL param
 router.get("/students/class/:classId", authMiddleware, viewStudentsByClass);
 router.get("/assignments/:assignmentId/submissions", authMiddleware, viewSubmissionsByAssignment);
+router.get("/class/:id", getClassById);
 
 export default router;

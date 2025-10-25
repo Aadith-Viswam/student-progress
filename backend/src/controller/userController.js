@@ -61,21 +61,6 @@ export const signup = async (req, res) => {
             await teacher.save();
         }
 
-        // 5️⃣ Generate JWT Token
-        const token = jwt.sign(
-            { id: newUser._id, role: newUser.role },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        // 6️⃣ Set JWT in cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            path: "/",
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
         // 7️⃣ Respond success
         res.status(201).json({
             message: "Signup successful",
@@ -84,7 +69,6 @@ export const signup = async (req, res) => {
                 name: newUser.name,
                 email: newUser.email,
                 role: newUser.role,
-                token
             }
         });
 
@@ -92,6 +76,16 @@ export const signup = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Server error during signup" });
     }
+};
+
+export const logout = (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    path: "/",
+    expires: new Date(0), // expire immediately
+    sameSite: "lax",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 

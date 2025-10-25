@@ -218,3 +218,15 @@ export const getClasses = async (req, res) => {
     res.status(500).json({ message: "Error fetching classes" });
   }
 };
+
+export const getClassById = async (req, res) => {
+  try {
+    const classId = req.params.id;
+    const classData = await ClassModel.findById(classId);
+    if (!classData) return res.status(404).json({ message: "Class not found" });
+    res.json({ class: classData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error fetching class" });
+  }
+};
